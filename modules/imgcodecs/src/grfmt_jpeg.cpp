@@ -608,6 +608,9 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
         int rst_interval = 0;
         int luma_quality = -1;
         int chroma_quality = -1;
+        int arithmetic = 0;
+        int block_size = 0;
+        int generate_rgb = 0;
 
         for( size_t i = 0; i < params.size(); i += 2 )
         {
@@ -655,6 +658,22 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
                 rst_interval = params[i+1];
                 rst_interval = MIN(MAX(rst_interval, 0), 65535L);
             }
+
+            if( params[i] == CV_IMWRITE_JPEG_ARITHMETIC )
+            {
+                arithmetic = params[i+1];
+            }
+
+            if( params[i] == CV_IMWRITE_JPEG_BLOCK_SIZE )
+            {
+                block_size = params[i+1];
+                block_size = MIN(MAX(block_size, 1), 16);
+            }
+
+            if (params[i] == CV_IMWRITE_JPEG_STORE_RGB) {
+                generate_rgb = params[i + 1];
+                generate_rgb = MIN(MAX(generate_rgb, 0), 2);
+            }
         }
 
         jpeg_set_defaults( &cinfo );
@@ -683,6 +702,19 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
             jpeg_default_qtables( &cinfo, TRUE );
         }
 #endif // #if JPEG_LIB_VERSION >= 70
+
+#if JPEG_LIB_VERSION >= 90
+        if( arithmetic )
+            cinfo.arith_code = TRUE;
+        if ( block_size )
+            cinfo.block_size = block_size;
+        if ( generate_rgb )
+        {
+            if ( generate_rgb == 2 )
+                cinfo.color_transform = JCT_SUBTRACT_GREEN;
+            jpeg_set_colorspace(&cinfo, JCS_RGB);
+        }
+#endif // #if JPEG_LIB_VERSION >= 90
 
         jpeg_start_compress( &cinfo, TRUE );
 

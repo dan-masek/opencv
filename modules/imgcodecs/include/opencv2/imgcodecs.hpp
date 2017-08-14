@@ -85,6 +85,9 @@ enum ImwriteFlags {
        IMWRITE_JPEG_RST_INTERVAL   = 4,  //!< JPEG restart interval, 0 - 65535, default is 0 - no restart.
        IMWRITE_JPEG_LUMA_QUALITY   = 5,  //!< Separate luma quality level, 0 - 100, default is 0 - don't use.
        IMWRITE_JPEG_CHROMA_QUALITY = 6,  //!< Separate chroma quality level, 0 - 100, default is 0 - don't use.
+       IMWRITE_JPEG_ARITHMETIC     = 7,  //!< Use arithmetic coding instead of Huffman, 0 or 1, default is False. (CAUTION: Not widely implemented in JPEG decoders.)
+       IMWRITE_JPEG_BLOCK_SIZE     = 8,  //!< DCT block size, 1 - 16, default is 8. (CAUTION: Not widely implemented in JPEG decoders.)
+       IMWRITE_JPEG_STORE_RGB      = 9,  //!< Create RGB JPEG file, 0, 1 or 2, default is False. (1 suppresses the conversion from RGB colorspace input to the default YCbCr JPEG colorspace. 2 adds reversible color transform.) (CAUTION: The color transform is not widely implemented in JPEG decoders.)
        IMWRITE_PNG_COMPRESSION     = 16, //!< For PNG, it can be the compression level from 0 to 9. A higher value means a smaller size and longer compression time. If specified, strategy is changed to IMWRITE_PNG_STRATEGY_DEFAULT (Z_DEFAULT_STRATEGY). Default value is 1 (best speed setting).
        IMWRITE_PNG_STRATEGY        = 17, //!< One of cv::ImwritePNGFlags, default is IMWRITE_PNG_STRATEGY_RLE.
        IMWRITE_PNG_BILEVEL         = 18, //!< Binary level PNG, 0 or 1, default is 0.

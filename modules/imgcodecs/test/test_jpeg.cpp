@@ -177,4 +177,138 @@ TEST(Imgcodecs_Jpeg, encode_decode_rst_jpeg)
     remove(output_normal.c_str());
 }
 
+TEST(Imgcodecs_Jpeg, encode_decode_arith_jpeg)
+{
+    cvtest::TS& ts = *cvtest::TS::ptr();
+    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
+    cv::Mat img = cv::imread(input);
+    ASSERT_FALSE(img.empty());
+
+    std::vector<int> params;
+    params.push_back(IMWRITE_JPEG_ARITHMETIC);
+    params.push_back(1);
+
+    string output_arith = cv::tempfile(".jpg");
+    EXPECT_NO_THROW(cv::imwrite(output_arith, img, params));
+    cv::Mat img_jpg_arith = cv::imread(output_arith);
+
+    string output_normal = cv::tempfile(".jpg");
+    EXPECT_NO_THROW(cv::imwrite(output_normal, img));
+    cv::Mat img_jpg_normal = cv::imread(output_normal);
+
+    EXPECT_EQ(0, cvtest::norm(img_jpg_arith, img_jpg_normal, NORM_INF));
+
+    remove(output_arith.c_str());
+    remove(output_normal.c_str());
+}
+
+TEST(Imgcodecs_Jpeg, encode_decode_blocksize_jpeg)
+{
+    cvtest::TS& ts = *cvtest::TS::ptr();
+    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
+    cv::Mat img = cv::imread(input);
+    ASSERT_FALSE(img.empty());
+
+    for (int block_size = 1; block_size <= 16; ++block_size) {
+        SCOPED_TRACE(format("block_size %d", block_size));
+
+        std::vector<int> params;
+        params.push_back(IMWRITE_JPEG_BLOCK_SIZE);
+        params.push_back(block_size);
+
+        string output_bs = cv::tempfile(".jpg");
+        EXPECT_NO_THROW(cv::imwrite(output_bs, img, params));
+        cv::Mat img_jpg_bs = cv::imread(output_bs);
+        ASSERT_FALSE(img_jpg_bs.empty());
+
+        remove(output_bs.c_str());
+    }
+}
+
+TEST(Imgcodecs_Jpeg, encode_decode_store_rgb_jpeg)
+{
+    cvtest::TS& ts = *cvtest::TS::ptr();
+    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
+    cv::Mat img = cv::imread(input);
+    ASSERT_FALSE(img.empty());
+
+    std::vector<int> params;
+    params.push_back(IMWRITE_JPEG_STORE_RGB);
+    params.push_back(1);
+
+    string output_rgb = cv::tempfile(".jpg");
+    EXPECT_NO_THROW(cv::imwrite(output_rgb, img, params));
+    cv::Mat img_jpg_rgb = cv::imread(output_rgb);
+    ASSERT_FALSE(img_jpg_rgb.empty());
+
+    remove(output_rgb.c_str());
+}
+
+TEST(Imgcodecs_Jpeg, encode_decode_store_rgb_tr_jpeg)
+{
+    cvtest::TS& ts = *cvtest::TS::ptr();
+    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
+    cv::Mat img = cv::imread(input);
+    ASSERT_FALSE(img.empty());
+
+    std::vector<int> params;
+    params.push_back(IMWRITE_JPEG_STORE_RGB);
+    params.push_back(2);
+
+    string output_rgb_tr = cv::tempfile(".jpg");
+    EXPECT_NO_THROW(cv::imwrite(output_rgb_tr, img, params));
+    cv::Mat img_jpg_rgb_tr = cv::imread(output_rgb_tr);
+    ASSERT_FALSE(img_jpg_rgb_tr.empty());
+
+    remove(output_rgb_tr.c_str());
+}
+
+TEST(Imgcodecs_Jpeg, encode_decode_lossless_a_jpeg)
+{
+    cvtest::TS& ts = *cvtest::TS::ptr();
+    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
+    cv::Mat img = cv::imread(input);
+    ASSERT_FALSE(img.empty());
+
+    std::vector<int> params;
+    params.push_back(IMWRITE_JPEG_ARITHMETIC);
+    params.push_back(1);
+    params.push_back(IMWRITE_JPEG_BLOCK_SIZE);
+    params.push_back(1);
+    params.push_back(IMWRITE_JPEG_STORE_RGB);
+    params.push_back(1);
+
+    string output_lossless = cv::tempfile(".jpg");
+    EXPECT_NO_THROW(cv::imwrite(output_lossless, img, params));
+    cv::Mat img_jpg_lossless = cv::imread(output_lossless);
+
+    EXPECT_EQ(0, cvtest::norm(img_jpg_lossless, img, NORM_INF));
+
+    remove(output_lossless.c_str());
+}
+
+TEST(Imgcodecs_Jpeg, encode_decode_lossless_b_jpeg)
+{
+    cvtest::TS& ts = *cvtest::TS::ptr();
+    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
+    cv::Mat img = cv::imread(input);
+    ASSERT_FALSE(img.empty());
+
+    std::vector<int> params;
+    params.push_back(IMWRITE_JPEG_ARITHMETIC);
+    params.push_back(1);
+    params.push_back(IMWRITE_JPEG_BLOCK_SIZE);
+    params.push_back(1);
+    params.push_back(IMWRITE_JPEG_STORE_RGB);
+    params.push_back(2);
+
+    string output_lossless = cv::tempfile(".jpg");
+    EXPECT_NO_THROW(cv::imwrite(output_lossless, img, params));
+    cv::Mat img_jpg_lossless = cv::imread(output_lossless);
+
+    EXPECT_EQ(0, cvtest::norm(img_jpg_lossless, img, NORM_INF));
+
+    remove(output_lossless.c_str());
+}
+
 #endif // HAVE_JPEG
